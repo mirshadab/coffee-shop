@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import SearchBar from "@/components/SearchBar";
 import PromoCard from "@/components/PromoCard";
 import CategoryTabs from "@/components/CategoryTabs";
