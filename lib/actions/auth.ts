@@ -13,19 +13,26 @@ export async function registerAction(_prevState: { error: string } | null, formD
     return { error: "All fields are required" };
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return { error: "Email already in use" };
+  try {
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return { error: "Email already in use" };
+    }
+
+    const hashed = await hashPassword(password);
+    const user = await prisma.user.create({
+      data: { name, email, password: hashed },
+    });
+
+    const token = await signToken({ userId: user.id, role: user.role });
+    await setSession(token);
+    redirect("/");
+  } catch (e) {
+    // Re-throw Next.js redirect errors
+    if (e && typeof e === "object" && "digest" in e) throw e;
+    console.error("Register error:", e);
+    return { error: "Something went wrong. Please try again." };
   }
-
-  const hashed = await hashPassword(password);
-  const user = await prisma.user.create({
-    data: { name, email, password: hashed },
-  });
-
-  const token = await signToken({ userId: user.id, role: user.role });
-  await setSession(token);
-  redirect("/");
 }
 
 export async function loginAction(_prevState: { error: string } | null, formData: FormData) {
@@ -36,23 +43,31 @@ export async function loginAction(_prevState: { error: string } | null, formData
     return { error: "All fields are required" };
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    return { error: "Invalid email or password" };
-  }
+  try {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return { error: "Invalid email or password" };
+    }
 
-  const valid = await verifyPassword(password, user.password);
-  if (!valid) {
-    return { error: "Invalid email or password" };
-  }
+    const valid = await verifyPassword(password, user.password);
+    if (!valid) {
+      return { error: "Invalid email or password" };
+    }
 
-  const token = await signToken({ userId: user.id, role: user.role });
-  await setSession(token);
+    const token = await signToken({ userId: user.id, role: user.role });
+    await setSession(token);
 
-  if (user.role === "ADMIN") {
-    redirect("/admin");
+    if (user.role === "ADMIN") {
+      redirect("/admin");
+    }
+    redirect("/");
+  } catch (e) {
+    // Re-throw redirects (Next.js uses thrown NEXT_REDIRECT)
+    // Re-throw Next.js redirect errors
+    if (e && typeof e === "object" && "digest" in e) throw e;
+    console.error("Login error:", e);
+    return { error: "Something went wrong. Please try again." };
   }
-  redirect("/");
 }
 
 export async function logoutAction() {
