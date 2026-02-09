@@ -2,6 +2,9 @@ import Link from "next/link";
 import { ChevronLeftIcon } from "@/components/icons";
 import { getUserOrders } from "@/lib/actions/order";
 
+type Order = Awaited<ReturnType<typeof getUserOrders>>[0];
+type OrderItem = Order["items"][0];
+
 const statusMessages: Record<string, string> = {
   PENDING: "Your order is being reviewed",
   ACCEPTED: "Your order has been accepted",
@@ -14,10 +17,10 @@ const statusMessages: Record<string, string> = {
 export default async function NotificationsPage() {
   const orders = await getUserOrders();
 
-  const notifications = orders.map((order) => ({
+  const notifications = orders.map((order: Order) => ({
     id: order.id,
     title: statusMessages[order.status] || "Order update",
-    description: `Order #${order.id.slice(-6)} · ${order.items.map((i) => i.product.name).join(", ")}`,
+    description: `Order #${order.id.slice(-6)} · ${order.items.map((i: OrderItem) => i.product.name).join(", ")}`,
     time: order.updatedAt,
     status: order.status,
   }));
@@ -46,7 +49,7 @@ export default async function NotificationsPage() {
           </div>
         ) : (
           <div className="space-y-1">
-            {notifications.map((notif, index) => (
+            {notifications.map((notif: { id: string; title: string; description: string; time: Date; status: string }, index: number) => (
               <div
                 key={notif.id}
                 className={`py-4 ${index < notifications.length - 1 ? "border-b border-[#F4F4F4]" : ""}`}

@@ -142,7 +142,7 @@ export default async function DeliveryPage({ params }: { params: Promise<{ order
             <div className="w-[56px] h-[56px] bg-gradient-to-br from-[#C67C4E] to-[#EDD6C8] rounded-[14px] flex items-center justify-center flex-shrink-0 overflow-hidden">
               {agent ? (
                 <span className="text-white text-[18px] font-bold">
-                  {agent.name.split(" ").map((n) => n[0]).join("")}
+                  {agent.name.split(" ").map((n: string) => n[0]).join("")}
                 </span>
               ) : (
                 <span className="text-white text-[18px] font-bold">?</span>

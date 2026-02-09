@@ -6,6 +6,7 @@ import { getAllOrders, updateOrderStatusAction, assignAgentAction, getAllAgents 
 import { useToast } from "@/lib/context/ToastContext";
 
 type Order = Awaited<ReturnType<typeof getAllOrders>>[0];
+type OrderItem = Order["items"][0];
 type Agent = Awaited<ReturnType<typeof getAllAgents>>[0];
 
 const statusColors: Record<string, string> = {
@@ -72,7 +73,7 @@ export default function AdminOrdersPage() {
 
             {/* Items */}
             <div className="space-y-2 mb-3">
-              {order.items.map((item) => (
+              {order.items.map((item: OrderItem) => (
                 <div key={item.id} className="flex items-center gap-2">
                   <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
                     <Image src={item.product.image} alt={item.product.name} fill className="object-cover" sizes="32px" />
@@ -121,7 +122,7 @@ export default function AdminOrdersPage() {
               <div>
                 <p className="text-[12px] font-medium text-[#2F2D2C] mb-2">Assign Delivery Agent:</p>
                 <div className="space-y-2">
-                  {agents.filter((a) => a.available).map((agent) => (
+                  {agents.filter((a: Agent) => a.available).map((agent: Agent) => (
                     <button
                       key={agent.id}
                       onClick={() => handleAssignAgent(order.id, agent.id)}

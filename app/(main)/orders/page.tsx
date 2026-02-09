@@ -3,6 +3,9 @@ import Link from "next/link";
 import { ChevronLeftIcon } from "@/components/icons";
 import { getUserOrders } from "@/lib/actions/order";
 
+type Order = Awaited<ReturnType<typeof getUserOrders>>[0];
+type OrderItem = Order["items"][0];
+
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-700",
   ACCEPTED: "bg-blue-100 text-blue-700",
@@ -48,7 +51,7 @@ export default async function OrdersPage() {
           </div>
         ) : (
           <div className="space-y-4">
-            {orders.map((order) => (
+            {orders.map((order: Order) => (
               <Link
                 key={order.id}
                 href={order.status !== "DELIVERED" && order.status !== "CANCELLED" ? `/delivery/${order.id}` : "#"}
@@ -68,17 +71,17 @@ export default async function OrdersPage() {
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  {order.items.slice(0, 1).map((item) => (
+                  {order.items.slice(0, 1).map((item: OrderItem) => (
                     <div key={item.id} className="relative w-[48px] h-[48px] rounded-xl overflow-hidden flex-shrink-0">
                       <Image src={item.product.image} alt={item.product.name} fill className="object-cover" sizes="48px" />
                     </div>
                   ))}
                   <div className="flex-1 min-w-0">
                     <p className="text-[14px] font-semibold text-[#2F2D2C]">
-                      {order.items.map((i) => i.product.name).join(", ")}
+                      {order.items.map((i: OrderItem) => i.product.name).join(", ")}
                     </p>
                     <p className="text-[12px] text-[#9B9B9B] mt-0.5">
-                      {order.items.reduce((sum, i) => sum + i.quantity, 0)} items · ${order.totalAmount.toFixed(2)}
+                      {order.items.reduce((sum: number, i: OrderItem) => sum + i.quantity, 0)} items · ${order.totalAmount.toFixed(2)}
                     </p>
                   </div>
                 </div>
