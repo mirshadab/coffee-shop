@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { registerAction } from "@/lib/actions/auth";
 
 export default function RegisterPage() {
   const [state, formAction, pending] = useActionState(registerAction, null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success) {
+      router.push("/");
+    }
+  }, [state, router]);
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -8,7 +8,7 @@ const demoAccounts: Record<string, { name: string; role: string; password: strin
   "admin@javagem.com": { name: "Admin", role: "ADMIN", password: "admin123" },
 };
 
-export async function registerAction(_prevState: { error: string } | null, formData: FormData) {
+export async function registerAction(_prevState: { error?: string; success?: boolean } | null, formData: FormData) {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -19,10 +19,10 @@ export async function registerAction(_prevState: { error: string } | null, formD
 
   const token = await signToken({ userId: "user-new", role: "CUSTOMER" });
   await setSession(token);
-  redirect("/");
+  return { success: true };
 }
 
-export async function loginAction(_prevState: { error: string } | null, formData: FormData) {
+export async function loginAction(_prevState: { error?: string; success?: boolean; redirectTo?: string } | null, formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
@@ -34,14 +34,13 @@ export async function loginAction(_prevState: { error: string } | null, formData
   if (account && account.password === password) {
     const token = await signToken({ userId: `demo-${email}`, role: account.role });
     await setSession(token);
-    if (account.role === "ADMIN") redirect("/admin");
-    redirect("/");
+    return { success: true, redirectTo: account.role === "ADMIN" ? "/admin" : "/" };
   }
 
   // Allow any email/password combo for demo
   const token = await signToken({ userId: "demo-user", role: "CUSTOMER" });
   await setSession(token);
-  redirect("/");
+  return { success: true, redirectTo: "/" };
 }
 
 export async function logoutAction() {
