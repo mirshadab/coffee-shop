@@ -3,6 +3,8 @@ import CategoryTabs from "@/components/CategoryTabs";
 import CoffeeCard from "@/components/CoffeeCard";
 import { getProducts } from "@/lib/actions/product";
 
+type Product = Awaited<ReturnType<typeof getProducts>>[0];
+
 export default async function MenuPage() {
   const products = await getProducts();
 
@@ -21,7 +23,7 @@ export default async function MenuPage() {
 
       {/* Coffee Grid */}
       <div className="px-7 mt-4 grid grid-cols-2 gap-4 pb-4">
-        {products.map((product) => (
+        {products.map((product: Product) => (
           <CoffeeCard
             key={product.id}
             id={product.id}

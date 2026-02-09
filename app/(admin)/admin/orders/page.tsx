@@ -55,7 +55,7 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="px-7 pb-4 space-y-3">
-        {orders.map((order) => (
+        {orders.map((order: Order) => (
           <div key={order.id} className="bg-white rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div>

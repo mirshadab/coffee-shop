@@ -83,7 +83,7 @@ export default function AdminInventoryPage() {
 
         {/* Product List */}
         <div className="space-y-3">
-          {products.map((product) => (
+          {products.map((product: Product) => (
             <div key={product.id} className="bg-white rounded-2xl p-4 flex items-center gap-3">
               <div className="relative w-[50px] h-[50px] rounded-xl overflow-hidden flex-shrink-0">
                 <Image src={product.image} alt={product.name} fill className="object-cover" sizes="50px" />

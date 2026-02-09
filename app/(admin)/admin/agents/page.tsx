@@ -70,7 +70,7 @@ export default function AdminAgentsPage() {
 
         {/* Agents List */}
         <div className="space-y-3">
-          {agents.map((agent) => (
+          {agents.map((agent: Agent) => (
             <div key={agent.id} className="bg-white rounded-2xl p-4 flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-[#C67C4E] to-[#EDD6C8] rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-[16px] font-bold">
