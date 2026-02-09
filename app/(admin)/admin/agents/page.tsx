@@ -74,7 +74,7 @@ export default function AdminAgentsPage() {
             <div key={agent.id} className="bg-white rounded-2xl p-4 flex items-center gap-3">
               <div className="w-12 h-12 bg-gradient-to-br from-[#C67C4E] to-[#EDD6C8] rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-[16px] font-bold">
-                  {agent.name.split(" ").map((n) => n[0]).join("")}
+                  {agent.name.split(" ").map((n: string) => n[0]).join("")}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
