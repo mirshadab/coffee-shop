@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || "fallback-secret");
+const secret = new TextEncoder().encode(process.env.JWT_SECRET || "javagem-coffee-shop-secret-key-2024");
 
 export async function hashPassword(password: string) {
   return bcrypt.hash(password, 10);
