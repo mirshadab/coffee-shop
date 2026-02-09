@@ -1,8 +1,12 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
-import { hashPassword, verifyPassword, signToken, setSession, clearSession } from "@/lib/auth";
+import { signToken, setSession, clearSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
+
+const demoAccounts: Record<string, { name: string; role: string; password: string }> = {
+  "jooklyn@email.com": { name: "Jooklyn Simmons", role: "CUSTOMER", password: "password123" },
+  "admin@javagem.com": { name: "Admin", role: "ADMIN", password: "admin123" },
+};
 
 export async function registerAction(_prevState: { error: string } | null, formData: FormData) {
   const name = formData.get("name") as string;
@@ -13,26 +17,9 @@ export async function registerAction(_prevState: { error: string } | null, formD
     return { error: "All fields are required" };
   }
 
-  try {
-    const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) {
-      return { error: "Email already in use" };
-    }
-
-    const hashed = await hashPassword(password);
-    const user = await prisma.user.create({
-      data: { name, email, password: hashed },
-    });
-
-    const token = await signToken({ userId: user.id, role: user.role });
-    await setSession(token);
-    redirect("/");
-  } catch (e) {
-    // Re-throw Next.js redirect errors
-    if (e && typeof e === "object" && "digest" in e) throw e;
-    console.error("Register error:", e);
-    return { error: "Something went wrong. Please try again." };
-  }
+  const token = await signToken({ userId: "user-new", role: "CUSTOMER" });
+  await setSession(token);
+  redirect("/");
 }
 
 export async function loginAction(_prevState: { error: string } | null, formData: FormData) {
@@ -43,31 +30,18 @@ export async function loginAction(_prevState: { error: string } | null, formData
     return { error: "All fields are required" };
   }
 
-  try {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return { error: "Invalid email or password" };
-    }
-
-    const valid = await verifyPassword(password, user.password);
-    if (!valid) {
-      return { error: "Invalid email or password" };
-    }
-
-    const token = await signToken({ userId: user.id, role: user.role });
+  const account = demoAccounts[email];
+  if (account && account.password === password) {
+    const token = await signToken({ userId: `demo-${email}`, role: account.role });
     await setSession(token);
-
-    if (user.role === "ADMIN") {
-      redirect("/admin");
-    }
+    if (account.role === "ADMIN") redirect("/admin");
     redirect("/");
-  } catch (e) {
-    // Re-throw redirects (Next.js uses thrown NEXT_REDIRECT)
-    // Re-throw Next.js redirect errors
-    if (e && typeof e === "object" && "digest" in e) throw e;
-    console.error("Login error:", e);
-    return { error: "Something went wrong. Please try again." };
   }
+
+  // Allow any email/password combo for demo
+  const token = await signToken({ userId: "demo-user", role: "CUSTOMER" });
+  await setSession(token);
+  redirect("/");
 }
 
 export async function logoutAction() {

@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { sendMessageAction, getMessagesAction } from "@/lib/actions/chat";
+import { useState, useRef, useEffect } from "react";
 
 interface Message {
   id: string;
@@ -10,35 +9,48 @@ interface Message {
   sender: { id: string; name: string; role: string };
 }
 
+const demoMessages: Message[] = [
+  {
+    id: "m1",
+    message: "Hi! I'm on my way with your order.",
+    createdAt: new Date(Date.now() - 300000),
+    sender: { id: "agent-1", name: "James Wilson", role: "AGENT" },
+  },
+  {
+    id: "m2",
+    message: "Great, thank you!",
+    createdAt: new Date(Date.now() - 240000),
+    sender: { id: "demo-user", name: "You", role: "CUSTOMER" },
+  },
+  {
+    id: "m3",
+    message: "I'll be there in about 10 minutes. Traffic is light today!",
+    createdAt: new Date(Date.now() - 180000),
+    sender: { id: "agent-1", name: "James Wilson", role: "AGENT" },
+  },
+];
+
 export default function ChatUI({ orderId, currentUserId }: { orderId: string; currentUserId: string }) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(demoMessages);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchMessages = async () => {
-      const msgs = await getMessagesAction(orderId);
-      setMessages(msgs as Message[]);
-    };
-
-    fetchMessages();
-    const interval = setInterval(fetchMessages, 4000);
-    return () => clearInterval(interval);
-  }, [orderId]);
-
-  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!input.trim() || sending) return;
     setSending(true);
 
-    const result = await sendMessageAction(orderId, input.trim());
-    if (result.success && result.message) {
-      setMessages((prev) => [...prev, result.message as Message]);
-    }
+    const newMsg: Message = {
+      id: `msg-${Date.now()}`,
+      message: input.trim(),
+      createdAt: new Date(),
+      sender: { id: currentUserId, name: "You", role: "CUSTOMER" },
+    };
+    setMessages((prev) => [...prev, newMsg]);
     setInput("");
     setSending(false);
   };

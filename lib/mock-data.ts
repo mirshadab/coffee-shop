@@ -1,0 +1,152 @@
+export const mockProducts = [
+  {
+    id: "1",
+    name: "Caffe Mocha",
+    subtitle: "Deep Foam",
+    price: 4.53,
+    rating: 4.8,
+    reviews: 230,
+    image: "/images/caffe-mocha.jpg",
+    description: "A cappuccino is an approximately 150 ml (5 oz) beverage, with 25 ml of espresso coffee and 85ml of fresh milk the fo...",
+    category: "All Coffee",
+    available: true,
+  },
+  {
+    id: "2",
+    name: "Flat White",
+    subtitle: "Espresso",
+    price: 3.53,
+    rating: 4.8,
+    reviews: 186,
+    image: "/images/flat-white.jpg",
+    description: "A flat white is a coffee drink consisting of espresso with microfoam (steamed milk with small, fine bubbles and a glossy consistency).",
+    category: "Machiato",
+    available: true,
+  },
+  {
+    id: "3",
+    name: "Caffe Latte",
+    subtitle: "Creamy Milk",
+    price: 4.15,
+    rating: 4.7,
+    reviews: 195,
+    image: "/images/caffe-latte.jpg",
+    description: "A latte is a coffee drink made with espresso and steamed milk. The term comes from the Italian caffè e latte, caffelatte or caffellatte.",
+    category: "Latte",
+    available: true,
+  },
+  {
+    id: "4",
+    name: "Americano",
+    subtitle: "Classic Black",
+    price: 3.10,
+    rating: 4.6,
+    reviews: 142,
+    image: "/images/americano.jpg",
+    description: "Caffè Americano is a type of coffee drink prepared by diluting an espresso with hot water, giving it a similar strength but different flavor.",
+    category: "Americano",
+    available: true,
+  },
+  {
+    id: "5",
+    name: "Espresso",
+    subtitle: "Bold Shot",
+    price: 2.80,
+    rating: 4.9,
+    reviews: 310,
+    image: "/images/espresso.jpg",
+    description: "Espresso is a concentrated form of coffee served in small, strong shots. It is the base for many other coffee drinks.",
+    category: "Espresso",
+    available: true,
+  },
+  {
+    id: "6",
+    name: "Cappuccino",
+    subtitle: "Frothy Top",
+    price: 4.20,
+    rating: 4.7,
+    reviews: 220,
+    image: "/images/cappuccino.jpg",
+    description: "A cappuccino is an espresso-based coffee drink that originated in Italy. It is prepared with steamed milk foam.",
+    category: "Cappuccino",
+    available: true,
+  },
+  {
+    id: "7",
+    name: "Macchiato",
+    subtitle: "Espresso Mark",
+    price: 3.80,
+    rating: 4.5,
+    reviews: 168,
+    image: "/images/macchiato.jpg",
+    description: "Caffè macchiato, sometimes called espresso macchiato, is an espresso coffee drink with a small amount of milk, usually foamed.",
+    category: "Machiato",
+    available: true,
+  },
+  {
+    id: "8",
+    name: "Irish Coffee",
+    subtitle: "Whiskey Blend",
+    price: 5.20,
+    rating: 4.8,
+    reviews: 156,
+    image: "/images/irish-coffee.jpg",
+    description: "Irish coffee is a cocktail consisting of hot coffee, Irish whiskey, and sugar, stirred, and topped with cream.",
+    category: "All Coffee",
+    available: true,
+  },
+];
+
+export const mockOrders = [
+  {
+    id: "order-1",
+    status: "DELIVERED",
+    totalAmount: 13.06,
+    deliveryFee: 1.0,
+    address: "Jl. Kpg Sutoyo, Kav 35",
+    createdAt: new Date("2025-01-15T10:30:00"),
+    items: [
+      { id: "item-1", quantity: 2, size: "M", price: 4.53, product: mockProducts[0] },
+      { id: "item-2", quantity: 1, size: "L", price: 4.0, product: mockProducts[2] },
+    ],
+  },
+  {
+    id: "order-2",
+    status: "PREPARING",
+    totalAmount: 8.33,
+    deliveryFee: 1.0,
+    address: "Jl. Kpg Sutoyo, Kav 35",
+    createdAt: new Date(),
+    items: [
+      { id: "item-3", quantity: 1, size: "M", price: 4.53, product: mockProducts[0] },
+      { id: "item-4", quantity: 1, size: "S", price: 3.80, product: mockProducts[6] },
+    ],
+  },
+];
+
+export const mockUser = {
+  id: "demo-user",
+  name: "Jooklyn Simmons",
+  email: "jooklyn@email.com",
+  phone: "+1987654321",
+  role: "CUSTOMER",
+};
+
+export const mockNotifications = [
+  { id: "n1", title: "Order Delivered", message: "Your Caffe Mocha order has been delivered!", time: "2 hours ago", read: false },
+  { id: "n2", title: "Order Confirmed", message: "Your order #2 has been accepted by the shop.", time: "1 day ago", read: true },
+  { id: "n3", title: "Welcome!", message: "Welcome to JavaGem! Enjoy your first coffee.", time: "3 days ago", read: true },
+];
+
+export const mockAgents = [
+  { id: "agent-1", name: "James Wilson", phone: "+1555123456", available: true },
+  { id: "agent-2", name: "Sarah Miller", phone: "+1555789012", available: true },
+  { id: "agent-3", name: "Mike Johnson", phone: "+1555345678", available: false },
+];
+
+export const mockAdminStats = {
+  totalOrders: 24,
+  totalRevenue: 186.50,
+  activeOrders: 3,
+  totalProducts: 8,
+};

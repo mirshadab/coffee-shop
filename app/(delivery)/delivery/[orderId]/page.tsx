@@ -1,19 +1,11 @@
 import Link from "next/link";
-import { getOrderWithDelivery } from "@/lib/actions/chat";
-import { notFound } from "next/navigation";
 
-const statusSteps = ["PENDING", "ACCEPTED", "PREPARING", "OUT_FOR_DELIVERY", "DELIVERED"];
-
-export default async function DeliveryPage({ params }: { params: Promise<{ orderId: string }> }) {
-  const { orderId } = await params;
-  const order = await getOrderWithDelivery(orderId);
-
-  if (!order) notFound();
-
-  const agent = order.orderDelivery?.agent;
-  const eta = order.orderDelivery?.eta || 10;
-  const currentStep = statusSteps.indexOf(order.status);
-  const filledBars = Math.max(1, Math.min(4, currentStep + 1));
+export default function DeliveryPage() {
+  const agent = { name: "James Wilson", phone: "+1555123456" };
+  const eta = 10;
+  const status = "OUT_FOR_DELIVERY";
+  const filledBars = 3;
+  const address = "Jl. Kpg Sutoyo";
 
   const statusText: Record<string, string> = {
     PENDING: "Order placed",
@@ -105,7 +97,7 @@ export default async function DeliveryPage({ params }: { params: Promise<{ order
           <p className="text-[16px] font-semibold text-[#242424] leading-[1.5]">{eta} minutes left</p>
           <p className="text-[12px] leading-[1.5]">
             <span className="text-[#A2A2A2]">Delivery to </span>
-            <span className="font-semibold text-[#2A2A2A]">{order.address?.split(",")[0] || "Jl. Kpg Sutoyo"}</span>
+            <span className="font-semibold text-[#2A2A2A]">{address}</span>
           </p>
         </div>
 
@@ -128,10 +120,10 @@ export default async function DeliveryPage({ params }: { params: Promise<{ order
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-[14px] font-semibold text-[#242424] leading-[1.5]">
-              {statusText[order.status] || "Processing"}
+              {statusText[status] || "Processing"}
             </p>
             <p className="text-[12px] font-light text-[#A2A2A2] leading-[1.5] whitespace-pre-line">
-              {statusDesc[order.status] || "Your order is being processed."}
+              {statusDesc[status] || "Your order is being processed."}
             </p>
           </div>
         </div>

@@ -1,30 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useActionState } from "react";
 import { ChevronLeftIcon } from "@/components/icons";
-import { updateProfileAction, changePasswordAction } from "@/lib/actions/user";
 import { useToast } from "@/lib/context/ToastContext";
 
 export default function SettingsPage() {
   const router = useRouter();
   const { showToast } = useToast();
-
-  const handleProfileUpdate = async (_prev: unknown, formData: FormData) => {
-    const result = await updateProfileAction(formData);
-    if (result.success) showToast("Profile updated");
-    return result;
-  };
-
-  const handlePasswordChange = async (_prev: unknown, formData: FormData) => {
-    const result = await changePasswordAction(formData);
-    if (result.success) showToast("Password changed");
-    else if (result.error) showToast(result.error, "error");
-    return result;
-  };
-
-  const [, profileAction, profilePending] = useActionState(handleProfileUpdate, null);
-  const [passwordState, passwordAction, passwordPending] = useActionState(handlePasswordChange, null);
 
   return (
     <div className="bg-[#F9F2ED] min-h-screen">
@@ -39,13 +21,13 @@ export default function SettingsPage() {
       <div className="bg-white rounded-t-3xl px-7 pt-6 pb-8">
         {/* Profile Section */}
         <h3 className="text-[16px] font-semibold text-[#2F2D2C] mb-4">Edit Profile</h3>
-        <form action={profileAction} className="space-y-4 mb-8">
+        <form onSubmit={(e) => { e.preventDefault(); showToast("Profile updated"); }} className="space-y-4 mb-8">
           <div>
             <label className="text-[13px] font-medium text-[#2F2D2C] mb-1.5 block">Full Name</label>
             <input
               name="name"
               type="text"
-              placeholder="Your name"
+              defaultValue="Jooklyn Simmons"
               className="w-full h-[50px] border border-[#DEDEDE] rounded-xl px-4 text-[14px] text-[#2F2D2C] placeholder:text-[#9B9B9B] outline-none focus:border-[#C67C4E] transition-colors"
             />
           </div>
@@ -54,16 +36,15 @@ export default function SettingsPage() {
             <input
               name="phone"
               type="tel"
-              placeholder="Your phone number"
+              defaultValue="+1987654321"
               className="w-full h-[50px] border border-[#DEDEDE] rounded-xl px-4 text-[14px] text-[#2F2D2C] placeholder:text-[#9B9B9B] outline-none focus:border-[#C67C4E] transition-colors"
             />
           </div>
           <button
             type="submit"
-            disabled={profilePending}
-            className="w-full bg-[#C67C4E] text-white font-semibold text-[14px] h-[48px] rounded-2xl disabled:opacity-60"
+            className="w-full bg-[#C67C4E] text-white font-semibold text-[14px] h-[48px] rounded-2xl"
           >
-            {profilePending ? "Saving..." : "Save Changes"}
+            Save Changes
           </button>
         </form>
 
@@ -71,10 +52,7 @@ export default function SettingsPage() {
 
         {/* Password Section */}
         <h3 className="text-[16px] font-semibold text-[#2F2D2C] mb-4">Change Password</h3>
-        <form action={passwordAction} className="space-y-4">
-          {passwordState?.error && (
-            <div className="bg-red-50 text-red-600 text-[13px] px-4 py-3 rounded-xl">{passwordState.error}</div>
-          )}
+        <form onSubmit={(e) => { e.preventDefault(); showToast("Password changed"); }} className="space-y-4">
           <div>
             <label className="text-[13px] font-medium text-[#2F2D2C] mb-1.5 block">New Password</label>
             <input
@@ -86,10 +64,9 @@ export default function SettingsPage() {
           </div>
           <button
             type="submit"
-            disabled={passwordPending}
-            className="w-full border border-[#C67C4E] text-[#C67C4E] font-semibold text-[14px] h-[48px] rounded-2xl disabled:opacity-60"
+            className="w-full border border-[#C67C4E] text-[#C67C4E] font-semibold text-[14px] h-[48px] rounded-2xl"
           >
-            {passwordPending ? "Changing..." : "Change Password"}
+            Change Password
           </button>
         </form>
       </div>

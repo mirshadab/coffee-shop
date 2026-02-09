@@ -1,18 +1,10 @@
 import Link from "next/link";
 import { ChevronLeftIcon } from "@/components/icons";
-import { getOrderWithDelivery } from "@/lib/actions/chat";
-import { getSession } from "@/lib/auth";
 import ChatUI from "@/components/ChatUI";
-import { notFound, redirect } from "next/navigation";
 
 export default async function ChatPage({ params }: { params: Promise<{ orderId: string }> }) {
   const { orderId } = await params;
-  const [order, session] = await Promise.all([getOrderWithDelivery(orderId), getSession()]);
-
-  if (!order) notFound();
-  if (!session) redirect("/login");
-
-  const agentName = order.orderDelivery?.agent?.name || "Delivery Agent";
+  const agentName = "James Wilson";
 
   return (
     <div className="bg-white min-h-screen flex flex-col">
@@ -33,7 +25,7 @@ export default async function ChatPage({ params }: { params: Promise<{ orderId: 
         </div>
       </div>
 
-      <ChatUI orderId={orderId} currentUserId={session.userId} />
+      <ChatUI orderId={orderId} currentUserId="demo-user" />
     </div>
   );
 }

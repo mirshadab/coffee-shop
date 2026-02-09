@@ -1,15 +1,9 @@
-export const dynamic = "force-dynamic";
-
 import SearchBar from "@/components/SearchBar";
 import CategoryTabs from "@/components/CategoryTabs";
 import CoffeeCard from "@/components/CoffeeCard";
-import { getProducts } from "@/lib/actions/product";
+import { mockProducts } from "@/lib/mock-data";
 
-type Product = Awaited<ReturnType<typeof getProducts>>[0];
-
-export default async function MenuPage() {
-  const products = await getProducts();
-
+export default function MenuPage() {
   return (
     <div className="bg-[#F9F2ED]">
       {/* Header */}
@@ -25,7 +19,7 @@ export default async function MenuPage() {
 
       {/* Coffee Grid */}
       <div className="px-7 mt-4 grid grid-cols-2 gap-4 pb-4">
-        {products.map((product: Product) => (
+        {mockProducts.map((product) => (
           <CoffeeCard
             key={product.id}
             id={product.id}

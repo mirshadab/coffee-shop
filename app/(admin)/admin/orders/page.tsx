@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import { getAllOrders, updateOrderStatusAction, assignAgentAction, getAllAgents } from "@/lib/actions/admin";
+import { useState } from "react";
 import { useToast } from "@/lib/context/ToastContext";
-
-type Order = Awaited<ReturnType<typeof getAllOrders>>[0];
-type OrderItem = Order["items"][0];
-type Agent = Awaited<ReturnType<typeof getAllAgents>>[0];
+import { mockAgents, mockProducts } from "@/lib/mock-data";
 
 const statusColors: Record<string, string> = {
   PENDING: "bg-yellow-100 text-yellow-700",
@@ -18,34 +14,54 @@ const statusColors: Record<string, string> = {
   CANCELLED: "bg-red-100 text-red-700",
 };
 
+const initialOrders = [
+  {
+    id: "order-a1",
+    status: "PENDING",
+    totalAmount: 9.06,
+    createdAt: new Date().toISOString(),
+    user: { name: "Jooklyn Simmons" },
+    items: [{ id: "i1", quantity: 2, price: 4.53, product: mockProducts[0] }],
+    orderDelivery: null as { agent: { name: string } } | null,
+  },
+  {
+    id: "order-a2",
+    status: "PREPARING",
+    totalAmount: 7.33,
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+    user: { name: "Sarah Chen" },
+    items: [
+      { id: "i2", quantity: 1, price: 3.53, product: mockProducts[1] },
+      { id: "i3", quantity: 1, price: 3.80, product: mockProducts[6] },
+    ],
+    orderDelivery: null as { agent: { name: string } } | null,
+  },
+  {
+    id: "order-a3",
+    status: "DELIVERED",
+    totalAmount: 4.20,
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+    user: { name: "Mike Johnson" },
+    items: [{ id: "i4", quantity: 1, price: 4.20, product: mockProducts[5] }],
+    orderDelivery: { agent: { name: "James Wilson" } },
+  },
+];
+
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState(initialOrders);
   const { showToast } = useToast();
 
-  const fetchData = async () => {
-    const [ordersData, agentsData] = await Promise.all([getAllOrders(), getAllAgents()]);
-    setOrders(ordersData);
-    setAgents(agentsData);
-    setLoading(false);
-  };
-
-  useEffect(() => { fetchData(); }, []);
-
-  const handleStatusUpdate = async (orderId: string, status: string) => {
-    await updateOrderStatusAction(orderId, status);
+  const handleStatusUpdate = (orderId: string, status: string) => {
+    setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
     showToast(`Order ${status.toLowerCase()}`);
-    fetchData();
   };
 
-  const handleAssignAgent = async (orderId: string, agentId: string) => {
-    await assignAgentAction(orderId, agentId);
+  const handleAssignAgent = (orderId: string, agentName: string) => {
+    setOrders((prev) => prev.map((o) =>
+      o.id === orderId ? { ...o, status: "OUT_FOR_DELIVERY", orderDelivery: { agent: { name: agentName } } } : o
+    ));
     showToast("Agent assigned");
-    fetchData();
   };
-
-  if (loading) return <div className="min-h-screen bg-[#F9F2ED] pt-20 text-center text-[#9B9B9B]">Loading...</div>;
 
   return (
     <div className="bg-[#F9F2ED] min-h-screen">
@@ -55,7 +71,7 @@ export default function AdminOrdersPage() {
       </div>
 
       <div className="px-7 pb-4 space-y-3">
-        {orders.map((order: Order) => (
+        {orders.map((order) => (
           <div key={order.id} className="bg-white rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
@@ -71,9 +87,8 @@ export default function AdminOrdersPage() {
               </span>
             </div>
 
-            {/* Items */}
             <div className="space-y-2 mb-3">
-              {order.items.map((item: OrderItem) => (
+              {order.items.map((item) => (
                 <div key={item.id} className="flex items-center gap-2">
                   <div className="relative w-8 h-8 rounded-lg overflow-hidden flex-shrink-0">
                     <Image src={item.product.image} alt={item.product.name} fill className="object-cover" sizes="32px" />
@@ -89,45 +104,23 @@ export default function AdminOrdersPage() {
               <span>${order.totalAmount.toFixed(2)}</span>
             </div>
 
-            {/* Actions */}
             {order.status === "PENDING" && (
               <div className="flex gap-2">
-                <button
-                  onClick={() => handleStatusUpdate(order.id, "ACCEPTED")}
-                  className="flex-1 bg-[#C67C4E] text-white text-[12px] font-semibold h-[36px] rounded-xl"
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={() => handleStatusUpdate(order.id, "CANCELLED")}
-                  className="flex-1 border border-red-300 text-red-500 text-[12px] font-semibold h-[36px] rounded-xl"
-                >
-                  Reject
-                </button>
+                <button onClick={() => handleStatusUpdate(order.id, "ACCEPTED")} className="flex-1 bg-[#C67C4E] text-white text-[12px] font-semibold h-[36px] rounded-xl">Accept</button>
+                <button onClick={() => handleStatusUpdate(order.id, "CANCELLED")} className="flex-1 border border-red-300 text-red-500 text-[12px] font-semibold h-[36px] rounded-xl">Reject</button>
               </div>
             )}
 
             {order.status === "ACCEPTED" && (
-              <div className="flex gap-2">
-                <button
-                  onClick={() => handleStatusUpdate(order.id, "PREPARING")}
-                  className="flex-1 bg-purple-500 text-white text-[12px] font-semibold h-[36px] rounded-xl"
-                >
-                  Start Preparing
-                </button>
-              </div>
+              <button onClick={() => handleStatusUpdate(order.id, "PREPARING")} className="w-full bg-purple-500 text-white text-[12px] font-semibold h-[36px] rounded-xl">Start Preparing</button>
             )}
 
             {order.status === "PREPARING" && (
               <div>
                 <p className="text-[12px] font-medium text-[#2F2D2C] mb-2">Assign Delivery Agent:</p>
                 <div className="space-y-2">
-                  {agents.filter((a: Agent) => a.available).map((agent: Agent) => (
-                    <button
-                      key={agent.id}
-                      onClick={() => handleAssignAgent(order.id, agent.id)}
-                      className="w-full flex items-center gap-3 border border-[#EAEAEA] rounded-xl p-3 text-left hover:border-[#C67C4E] transition-colors"
-                    >
+                  {mockAgents.filter((a) => a.available).map((agent) => (
+                    <button key={agent.id} onClick={() => handleAssignAgent(order.id, agent.name)} className="w-full flex items-center gap-3 border border-[#EAEAEA] rounded-xl p-3 text-left hover:border-[#C67C4E] transition-colors">
                       <div className="w-8 h-8 bg-gradient-to-br from-[#C67C4E] to-[#EDD6C8] rounded-full flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold">{agent.name[0]}</span>
                       </div>
@@ -144,12 +137,7 @@ export default function AdminOrdersPage() {
             {order.status === "OUT_FOR_DELIVERY" && order.orderDelivery && (
               <div className="flex items-center gap-2">
                 <span className="text-[12px] text-[#9B9B9B]">Agent: {order.orderDelivery.agent.name}</span>
-                <button
-                  onClick={() => handleStatusUpdate(order.id, "DELIVERED")}
-                  className="ml-auto bg-green-500 text-white text-[12px] font-semibold px-4 h-[36px] rounded-xl"
-                >
-                  Mark Delivered
-                </button>
+                <button onClick={() => handleStatusUpdate(order.id, "DELIVERED")} className="ml-auto bg-green-500 text-white text-[12px] font-semibold px-4 h-[36px] rounded-xl">Mark Delivered</button>
               </div>
             )}
           </div>

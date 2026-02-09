@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { MinusIcon, PlusIcon, EditIcon, NoteIcon, ChevronDownIcon } from "@/components/icons";
 import { useCart } from "@/lib/context/CartContext";
 import { useToast } from "@/lib/context/ToastContext";
-import { placeOrderAction } from "@/lib/actions/order";
 import OrderSuccessModal from "@/components/OrderSuccessModal";
 
 export default function CartPage() {
@@ -27,29 +26,12 @@ export default function CartPage() {
     }
 
     setPlacing(true);
-    try {
-      const result = await placeOrderAction({
-        items: items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          size: item.size,
-          price: item.price,
-        })),
-        deliveryMethod,
-        address: "Jl. Kpg Sutoyo No. 620, Bilzen, Tanjungbalai",
-      });
-
-      if (result.error) {
-        showToast(result.error, "error");
-      } else if (result.orderId) {
-        clearCart();
-        setSuccessOrderId(result.orderId);
-      }
-    } catch {
-      showToast("Failed to place order", "error");
-    } finally {
+    // Demo mode: simulate order placement
+    setTimeout(() => {
+      clearCart();
+      setSuccessOrderId("demo-order-" + Date.now());
       setPlacing(false);
-    }
+    }, 800);
   };
 
   if (items.length === 0 && !successOrderId) {

@@ -1,17 +1,11 @@
-export const dynamic = "force-dynamic";
-
 import SearchBar from "@/components/SearchBar";
 import PromoCard from "@/components/PromoCard";
 import CategoryTabs from "@/components/CategoryTabs";
 import CoffeeCard from "@/components/CoffeeCard";
 import { ChevronDownIcon } from "@/components/icons";
-import { getProducts } from "@/lib/actions/product";
+import { mockProducts } from "@/lib/mock-data";
 
-type Product = Awaited<ReturnType<typeof getProducts>>[0];
-
-export default async function Home() {
-  const products = await getProducts();
-
+export default function Home() {
   return (
     <div className="bg-[#F9F2ED]">
       {/* Dark Header Section */}
@@ -41,7 +35,7 @@ export default async function Home() {
 
       {/* Coffee Grid */}
       <div className="px-7 mt-4 grid grid-cols-2 gap-4 pb-4">
-        {products.slice(0, 4).map((product: Product) => (
+        {mockProducts.slice(0, 4).map((product) => (
           <CoffeeCard
             key={product.id}
             id={product.id}
